@@ -1,0 +1,186 @@
+@import 'tuicss/dist/tuicss.min.css';
+
+/* MS-DOS 16-Color Retro Palette Overrides & Layout */
+:root {
+  --dos-bg-blue: #0000aa;
+  --dos-cyan: #00aaaa;
+  --dos-yellow: #ffff55;
+  --dos-white: #ffffff;
+  --dos-black: #000000;
+  --dos-gray: #aaaaaa;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--dos-bg-blue);
+  color: var(--dos-white);
+  font-family: 'Courier New', Consolas, Monaco, monospace;
+  overflow: hidden;
+  user-select: none;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+}
+
+/* CRT Screen Effect Overlay (Optional) */
+.crt-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 4px, 6px 100%;
+  z-index: 9999;
+  opacity: 0.6;
+}
+
+/* Top Menubar */
+.tui-navbar {
+  background-color: var(--dos-cyan) !important;
+  color: var(--dos-black) !important;
+  font-weight: bold;
+}
+
+.tui-navbar ul li a {
+  color: var(--dos-black) !important;
+  cursor: pointer;
+}
+
+.tui-navbar ul li a:hover,
+.tui-navbar ul li.active a {
+  background-color: var(--dos-black) !important;
+  color: var(--dos-yellow) !important;
+}
+
+/* Main Dual Pane Section */
+.dos-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  padding: 6px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.dos-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+  background-color: var(--dos-bg-blue);
+}
+
+.dos-pane .tui-window {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+}
+
+.dos-pane .tui-window-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+/* File Table formatting */
+.dos-file-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dos-file-table th {
+  color: var(--dos-cyan);
+  text-align: left;
+  border-bottom: 1px dashed var(--dos-cyan);
+  padding: 4px;
+}
+
+.dos-file-table td {
+  padding: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dos-file-table tr.selected td {
+  background-color: var(--dos-cyan);
+  color: var(--dos-black);
+  font-weight: bold;
+}
+
+.dos-file-table tr:hover:not(.selected) td {
+  color: var(--dos-yellow);
+}
+
+/* Command Prompt Line */
+.dos-cmd-bar {
+  display: flex;
+  align-items: center;
+  padding: 4px 8px;
+  background-color: var(--dos-black);
+  color: var(--dos-white);
+  border-top: 1px solid var(--dos-cyan);
+  font-weight: bold;
+}
+
+.dos-cmd-bar label {
+  color: var(--dos-yellow);
+  margin-right: 8px;
+}
+
+.dos-cmd-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: var(--dos-white);
+  font-family: inherit;
+  font-size: 1rem;
+  outline: none;
+}
+
+/* Bottom Status Function Bar */
+.dos-status-bar {
+  display: flex;
+  background-color: var(--dos-black);
+  color: var(--dos-white);
+  padding: 2px 4px;
+  font-size: 0.85rem;
+  border-top: 1px solid var(--dos-cyan);
+}
+
+.dos-fn-key {
+  flex: 1;
+  text-align: center;
+  border-right: 1px solid #333;
+}
+
+.dos-fn-num {
+  color: var(--dos-cyan);
+  font-weight: bold;
+}
+
+.dos-fn-label {
+  color: var(--dos-white);
+  background-color: #005555;
+  padding: 0 4px;
+}

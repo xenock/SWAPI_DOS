@@ -1,0 +1,23 @@
+{
+  "name": "swapi-dos",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "preact": "^10.22.0",
+    "tuicss": "^2.1.2"
+  },
+  "devDependencies": {
+    "@preact/preset-vite": "^2.8.3",
+    "jsdom": "^24.1.0",
+    "typescript": "^5.4.5",
+    "vite": "^5.2.11",
+    "vitest": "^1.6.0"
+  }
+}
