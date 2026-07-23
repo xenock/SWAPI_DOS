@@ -1,8 +1,8 @@
-## MODIFIED Requirements
+## ADDED Requirements
 
-### Requirement: Navegación Cruzada Interactiva entre Entidades
-Las referencias a otras entidades (como planeta natal, vehículos o películas) mostradas en el panel de inspección DEBEN renderizarse como enlaces interactivos etiquetados con el título/nombre real de la entidad resolviéndolos asíncronamente (ej. `[Tatooine]`, `[A New Hope]`), permitiendo navegar e inspeccionar la entidad vinculada al ser accionados.
+### Requirement: Diseño Responsivo y Adaptable para Móviles y Tablets
+La interfaz estilo MS-DOS DEBE ser responsiva, adaptándose automáticamente a pantallas móviles (< 768px) manteniendo la barra de navegación Navbar compacta en una sola fila horizontal scrollable, ajustando la tabla de archivos a 2 columnas limpias y posicionando el contenido del panel derecho sin solapamientos con la leyenda ni desbordamientos horizontales de texto.
 
-#### Scenario: Visualización y Clic en Planeta Natal con Nombre Real
-- **WHEN** se inspeccione la ficha de un personaje (ej. Luke Skywalker)
-- **THEN** el enlace de planeta natal resuelve y muestra el nombre real "[Tatooine]" en lugar de etiquetas genéricas, y al hacer clic navega e inspecciona la ficha de Tatooine.
+#### Scenario: Ausencia de Solapamiento y Desbordamiento en Panel Derecho
+- **WHEN** se inspeccione un registro en una pantalla móvil estrecha (< 768px)
+- **THEN** los botones de pestañas mantienen un margen limpio bajo la leyenda de título TuiCss y los textos/enlaces del panel derecho se ajustan al contenedor sin desbordar los bordes laterales.
