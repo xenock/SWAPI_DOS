@@ -50,7 +50,7 @@ describe('RightPane Component', () => {
       <RightPane selectedEntry={mockEntry} activeTab="general" onNavigateToUrl={handleNavigate} />
     );
 
-    const planetLink = getByText('[VER PLANETS #1]');
+    const planetLink = getByText(/PLANETS #1/i);
     expect(planetLink).toBeDefined();
 
     fireEvent.click(planetLink);

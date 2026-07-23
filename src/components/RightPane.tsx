@@ -1,5 +1,7 @@
-import { DatFileEntry } from '../types/swapi';
+import { useState, useEffect } from 'preact/hooks';
+import { DatFileEntry, SwapiEntity } from '../types/swapi';
 import { soundSynth } from '../services/sound';
+import { swapiClient } from '../services/swapi';
 
 export type RightPaneTab = 'general' | 'stats' | 'raw';
 
@@ -16,6 +18,57 @@ export const RightPane = ({
   onTabChange,
   onNavigateToUrl
 }: RightPaneProps) => {
+  const [resolvedNames, setResolvedNames] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!selectedEntry) return;
+
+    const data = selectedEntry.data as Record<string, any>;
+    const urlsToResolve: string[] = [];
+
+    Object.values(data).forEach((v) => {
+      if (typeof v === 'string' && v.startsWith('http')) {
+        urlsToResolve.push(v);
+      } else if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'string' && v[0].startsWith('http')) {
+        v.forEach((url) => {
+          if (typeof url === 'string' && url.startsWith('http')) {
+            urlsToResolve.push(url);
+          }
+        });
+      }
+    });
+
+    if (urlsToResolve.length === 0) return;
+
+    let isSubscribed = true;
+
+    const resolveUrls = async () => {
+      const nameMap: Record<string, string> = {};
+      await Promise.all(
+        urlsToResolve.map(async (url) => {
+          try {
+            const entity = await swapiClient.getEntityByUrl<SwapiEntity>(url);
+            const displayName = 'name' in entity ? entity.name : 'title' in entity ? entity.title : null;
+            if (displayName) {
+              nameMap[url] = displayName;
+            }
+          } catch {
+            // fallback silently
+          }
+        })
+      );
+
+      if (isSubscribed) {
+        setResolvedNames((prev) => ({ ...prev, ...nameMap }));
+      }
+    };
+
+    resolveUrls();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [selectedEntry]);
 
   const handleTabClick = (tab: RightPaneTab) => {
     soundSynth.playClick();
@@ -40,12 +93,15 @@ export const RightPane = ({
   const data = selectedEntry.data as Record<string, any>;
 
   const parseSwapiUrlLabel = (urlStr: string): string => {
+    if (resolvedNames[urlStr]) {
+      return `[${resolvedNames[urlStr]}]`;
+    }
     try {
       const match = urlStr.match(/\/(people|planets|starships|vehicles|species|films)\/(\d+)\/?$/);
       if (match) {
         const cat = match[1].toUpperCase();
         const id = match[2];
-        return `[VER ${cat} #${id}]`;
+        return `[${cat} #${id}]`;
       }
     } catch {
       // fallback
