@@ -134,34 +134,47 @@ export const RightPane = ({
     <div className="dos-pane">
       <div className="tui-window">
         <fieldset className="tui-fieldset" style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <legend className="yellow-text" style={{ fontWeight: 'bold' }}>
+          <legend className="yellow-text">
             📜 INSPECCIONANDO: {selectedEntry.filename}
           </legend>
 
-          <div style={{ marginBottom: '8px' }}>
+          <div style={{ margin: '4px 0 8px 0', display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
             <button
-              className={`tui-button ${activeTab === 'general' ? 'tui-fieldset-button' : ''}`}
+              className="tui-button"
               onClick={() => handleTabClick('general')}
-              style={{ marginRight: '4px' }}
+              style={{
+                backgroundColor: activeTab === 'general' ? 'var(--dos-cyan)' : undefined,
+                color: activeTab === 'general' ? 'var(--dos-black)' : undefined,
+                fontWeight: activeTab === 'general' ? 'bold' : undefined
+              }}
             >
               [1] General
             </button>
             <button
-              className={`tui-button ${activeTab === 'stats' ? 'tui-fieldset-button' : ''}`}
+              className="tui-button"
               onClick={() => handleTabClick('stats')}
-              style={{ marginRight: '4px' }}
+              style={{
+                backgroundColor: activeTab === 'stats' ? 'var(--dos-cyan)' : undefined,
+                color: activeTab === 'stats' ? 'var(--dos-black)' : undefined,
+                fontWeight: activeTab === 'stats' ? 'bold' : undefined
+              }}
             >
               [2] Estadísticas
             </button>
             <button
-              className={`tui-button ${activeTab === 'raw' ? 'tui-fieldset-button' : ''}`}
+              className="tui-button"
               onClick={() => handleTabClick('raw')}
+              style={{
+                backgroundColor: activeTab === 'raw' ? 'var(--dos-cyan)' : undefined,
+                color: activeTab === 'raw' ? 'var(--dos-black)' : undefined,
+                fontWeight: activeTab === 'raw' ? 'bold' : undefined
+              }}
             >
               [3] Raw JSON
             </button>
           </div>
 
-          <div className="tui-window-content" style={{ flex: 1, overflowY: 'auto' }}>
+          <div className="tui-window-content" style={{ flex: 1, overflowY: 'auto', wordBreak: 'break-word' }}>
             {activeTab === 'general' && (
               <div>
                 <h4 className="yellow-text" style={{ margin: '0 0 8px 0', borderBottom: '1px solid #00aaaa' }}>

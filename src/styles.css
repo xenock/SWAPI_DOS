@@ -79,22 +79,68 @@ html, body {
   opacity: 0.6;
 }
 
-/* Top Menubar */
-.tui-navbar {
-  background-color: var(--dos-cyan) !important;
-  color: var(--dos-black) !important;
+/* Top Menubar (Overriding TuiCss via Higher Selector Specificity) */
+:root body nav.tui-navbar {
+  background-color: var(--dos-cyan);
+  color: var(--dos-black);
   font-weight: bold;
+  white-space: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 }
 
-.tui-navbar ul li a {
-  color: var(--dos-black) !important;
+:root body nav.tui-navbar::-webkit-scrollbar,
+:root body nav.tui-navbar ul::-webkit-scrollbar {
+  display: none;
+}
+
+:root body nav.tui-navbar ul {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+:root body nav.tui-navbar ul li {
+  display: inline-block;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+:root body nav.tui-navbar ul li a {
+  color: var(--dos-black);
   cursor: pointer;
+  white-space: nowrap;
+  padding: 4px 8px;
 }
 
-.tui-navbar ul li a:hover,
-.tui-navbar ul li.active a {
-  background-color: var(--dos-black) !important;
-  color: var(--dos-yellow) !important;
+:root body nav.tui-navbar ul li a:hover,
+:root body nav.tui-navbar ul li.active a {
+  background-color: var(--dos-black);
+  color: var(--dos-yellow);
+}
+
+/* Fieldset and Legend Safe Responsive Spacing */
+:root .dos-pane fieldset.tui-fieldset {
+  position: relative;
+  padding-top: 28px;
+  box-sizing: border-box;
+}
+
+:root .dos-pane fieldset.tui-fieldset legend {
+  position: absolute;
+  top: -10px;
+  left: 8px;
+  background-color: var(--dos-bg-blue);
+  padding: 0 6px;
+  max-width: calc(100% - 24px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  z-index: 10;
 }
 
 /* Main Dual Pane Section */
@@ -122,12 +168,13 @@ html, body {
   flex-direction: column;
   height: 100%;
   margin: 0;
-  background-color: var(--dos-bg-blue) !important;
+  background-color: var(--dos-bg-blue);
 }
 
 .dos-pane .tui-window-content {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 8px;
 }
 
@@ -174,6 +221,7 @@ html, body {
 .dos-cmd-bar label {
   color: var(--dos-yellow);
   margin-right: 8px;
+  white-space: nowrap;
 }
 
 .dos-cmd-input {
@@ -200,6 +248,8 @@ html, body {
   flex: 1;
   text-align: center;
   border-right: 1px solid #333;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
 .dos-fn-num {
@@ -224,4 +274,77 @@ html, body {
   background-color: var(--dos-cyan);
   color: var(--dos-black);
   text-decoration: none;
+}
+
+/* Responsive Media Queries for Mobile & Narrow Screens (< 768px) */
+@media (max-width: 767px) {
+  html, body, #app {
+    overflow: auto;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .dos-workspace {
+    flex-direction: column;
+    overflow-y: visible;
+    height: auto;
+    padding: 4px;
+    gap: 6px;
+  }
+
+  .dos-pane {
+    min-height: 260px;
+    height: auto;
+  }
+
+  .dos-cmd-bar {
+    padding: 6px 4px;
+    font-size: 0.85rem;
+  }
+
+  .dos-status-bar {
+    flex-wrap: wrap;
+    gap: 2px;
+    padding: 4px 2px;
+  }
+
+  .dos-fn-key {
+    flex: 1 1 calc(33.33% - 4px);
+    min-width: 60px;
+    margin-bottom: 2px;
+    border-right: none;
+    border: 1px solid #333;
+    padding: 4px 2px;
+    font-size: 0.75rem;
+  }
+
+  .dos-col-size {
+    display: none;
+  }
+
+  .dos-file-table {
+    table-layout: fixed;
+    width: 100%;
+    font-size: 0.75rem;
+  }
+
+  .dos-file-table th:first-child,
+  .dos-file-table td:first-child {
+    width: 55%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dos-file-table th:nth-child(2),
+  .dos-file-table td:nth-child(2) {
+    width: 45%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dos-file-table td, .dos-file-table th {
+    padding: 6px 3px;
+  }
 }

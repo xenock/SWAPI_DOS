@@ -48,7 +48,7 @@ export const LeftPane = ({
                   <tr>
                     <th>NOMBRE DE ARCHIVO</th>
                     <th>REGISTRO</th>
-                    <th>TAMAÑO</th>
+                    <th className="dos-col-size">TAMAÑO</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -63,7 +63,7 @@ export const LeftPane = ({
                     >
                       <td>{entry.filename}</td>
                       <td>{entry.name}</td>
-                      <td>{entry.sizeKb}</td>
+                      <td className="dos-col-size">{entry.sizeKb}</td>
                     </tr>
                   ))}
                 </tbody>
