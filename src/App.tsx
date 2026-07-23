@@ -104,6 +104,13 @@ export const App = () => {
     }
   };
 
+  const handleClearCache = () => {
+    swapiClient.clearCache();
+    soundSynth.playSuccess();
+    setStatusText('CACHÉ PURGADA');
+    loadCategoryData(category, page);
+  };
+
   const handleFnKey = (num: number) => {
     soundSynth.playClick();
     if (num === 1) setShowHelpModal(true);
@@ -181,6 +188,7 @@ export const App = () => {
         onChangeCategory={handleSelectCategory}
         onOpenHelp={() => setShowHelpModal(true)}
         onSelectTheme={(t) => setTheme(t)}
+        onClearCache={handleClearCache}
       />
 
       <StatusBar statusText={statusText} onFnKey={handleFnKey} />
@@ -212,7 +220,8 @@ export const App = () => {
                   <li><strong>F3</strong>: Alternar pestañas (General ➔ Stats ➔ Raw)</li>
                   <li><strong>F5</strong>: Recargar datos de la categoría actual</li>
                   <li><strong>F9 / Alt+S</strong>: Activar / Silenciar sonidos PC Speaker</li>
-                  <li><strong>F10</strong>: Apagar sistema / Salir</li>
+                  <li><strong>F10</strong>: Apagar sistema / Menú de salida</li>
+                  <li><strong>CLEAR CACHE / PURGE</strong>: Vaciar caché de localStorage</li>
                   <li><strong>THEME imperial|rebel|sith|amber</strong>: Cambiar tema</li>
                   <li><strong>SEARCH &lt;query&gt;</strong>: Buscar registros en SWAPI</li>
                   <li><strong>DIR &lt;category&gt;</strong>: Cambiar de categoría</li>
@@ -234,7 +243,7 @@ export const App = () => {
         </div>
       )}
 
-      {/* Modal Apagado F10 */}
+      {/* Modal Apagado / Salida F10 */}
       {showShutdownModal && (
         <div
           style={{
@@ -262,15 +271,25 @@ export const App = () => {
           <p style={{ color: '#AAAAAA', fontSize: '0.9rem', marginBottom: '30px' }}>
             El sistema Holonet ha sido puesto en modo de espera seguro.
           </p>
-          <button
-            className="tui-button"
-            onClick={() => {
-              soundSynth.playSuccess();
-              setShowShutdownModal(false);
-            }}
-          >
-            [REINICIAR TERMINAL]
-          </button>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              className="tui-button"
+              onClick={() => {
+                handleClearCache();
+              }}
+            >
+              [PURGAR CACHÉ LOCAL]
+            </button>
+            <button
+              className="tui-button"
+              onClick={() => {
+                soundSynth.playSuccess();
+                setShowShutdownModal(false);
+              }}
+            >
+              [REINICIAR TERMINAL]
+            </button>
+          </div>
         </div>
       )}
     </div>

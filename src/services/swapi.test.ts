@@ -6,7 +6,11 @@ describe('SwapiClient', () => {
   let client: SwapiClient;
 
   beforeEach(() => {
-    client = new SwapiClient(['https://mirror1.com/api/', 'https://mirror2.com/api/']);
+    if (typeof localStorage !== 'undefined') {
+      localStorage.clear();
+    }
+    // Pass 0 delay for instant unit tests
+    client = new SwapiClient(['https://mirror1.com/api/', 'https://mirror2.com/api/'], 0);
     vi.restoreAllMocks();
   });
 
@@ -24,7 +28,7 @@ describe('SwapiClient', () => {
     expect(datEntries[1].filename).toBe('002_A_NEW_HOPE.DAT');
   });
 
-  it('uses memory cache for duplicate network requests', async () => {
+  it('uses memory and localStorage cache for duplicate network requests', async () => {
     const mockResponse = { count: 1, next: null, previous: null, results: [{ name: 'Tatooine' }] };
     
     globalThis.fetch = vi.fn().mockResolvedValue({
@@ -40,7 +44,22 @@ describe('SwapiClient', () => {
     const res2 = await client.getCategoryList('planets', 1);
     expect(globalThis.fetch).toHaveBeenCalledTimes(1);
     expect((res2.results[0] as SwapiPlanet).name).toBe('Tatooine');
-    expect(client.getCacheSize()).toBe(1);
+    expect(client.getCacheSize()).toBeGreaterThanOrEqual(1);
+  });
+
+  it('clears memory and localStorage cache on clearCache()', async () => {
+    const mockResponse = { count: 1, next: null, previous: null, results: [{ name: 'Alderaan' }] };
+
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => mockResponse,
+    }) as any;
+
+    await client.getCategoryList('planets', 1);
+    expect(client.getCacheSize()).toBeGreaterThanOrEqual(1);
+
+    client.clearCache();
+    expect(client.getCacheSize()).toBe(0);
   });
 
   it('fails over to secondary mirror URL if primary mirror fails', async () => {

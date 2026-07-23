@@ -3,27 +3,85 @@ import { SwapiCategory, SwapiEntity, SwapiListResponse, DatFileEntry } from '../
 export class SwapiClient {
   private baseUrls: string[];
   private cache: Map<string, any>;
+  private storagePrefix = 'swapi_cache_';
+  private retroDelayMs = 180;
 
-  constructor(customUrls?: string[]) {
+  constructor(customUrls?: string[], retroDelayMs: number = 180) {
     this.baseUrls = customUrls || [
       'https://swapi.py4e.com/api/',
       'https://swapi.dev/api/'
     ];
     this.cache = new Map<string, any>();
+    this.retroDelayMs = retroDelayMs;
   }
 
   public getCacheSize(): number {
-    return this.cache.size;
+    let storageCount = 0;
+    if (typeof window !== 'undefined' && window.localStorage) {
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(this.storagePrefix)) {
+          storageCount++;
+        }
+      }
+    }
+    return Math.max(this.cache.size, storageCount);
   }
 
   public clearCache(): void {
     this.cache.clear();
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const keysToRemove: string[] = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(this.storagePrefix)) {
+          keysToRemove.push(key);
+        }
+      }
+      keysToRemove.forEach((k) => localStorage.removeItem(k));
+    }
+  }
+
+  private getFromCache<T>(key: string): T | null {
+    if (this.cache.has(key)) {
+      return this.cache.get(key) as T;
+    }
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        const raw = localStorage.getItem(this.storagePrefix + key);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          this.cache.set(key, parsed);
+          return parsed as T;
+        }
+      } catch {
+        // Fallback silently if storage read fails
+      }
+    }
+    return null;
+  }
+
+  private saveToCache(key: string, data: any): void {
+    this.cache.set(key, data);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      try {
+        localStorage.setItem(this.storagePrefix + key, JSON.stringify(data));
+      } catch {
+        // Fallback silently if storage quota exceeded
+      }
+    }
   }
 
   private async fetchWithMirrorFallback<T>(path: string): Promise<T> {
     const cacheKey = path.toLowerCase();
-    if (this.cache.has(cacheKey)) {
-      return this.cache.get(cacheKey) as T;
+    const cachedData = this.getFromCache<T>(cacheKey);
+
+    if (cachedData !== null) {
+      // Simulate retro disk/modem read delay even when serving from cache
+      if (this.retroDelayMs > 0) {
+        await new Promise((resolve) => setTimeout(resolve, this.retroDelayMs));
+      }
+      return cachedData;
     }
 
     let lastError: Error | null = null;
@@ -35,7 +93,7 @@ export class SwapiClient {
           throw new Error(`HTTP ${response.status}: ${response.statusText}`);
         }
         const data = await response.json();
-        this.cache.set(cacheKey, data);
+        this.saveToCache(cacheKey, data);
         return data as T;
       } catch (err) {
         lastError = err instanceof Error ? err : new Error(String(err));

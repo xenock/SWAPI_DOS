@@ -10,6 +10,7 @@ interface CommandPromptProps {
   onChangeCategory: (category: SwapiCategory) => void;
   onOpenHelp: () => void;
   onSelectTheme: (theme: DosTheme) => void;
+  onClearCache?: () => void;
   inputRef?: RefObject<HTMLInputElement>;
 }
 
@@ -19,6 +20,7 @@ export const CommandPrompt = ({
   onChangeCategory,
   onOpenHelp,
   onSelectTheme,
+  onClearCache,
   inputRef
 }: CommandPromptProps) => {
   const [inputVal, setInputVal] = useState('');
@@ -31,7 +33,7 @@ export const CommandPrompt = ({
       soundSynth.playClick();
       const parts = trimmed.split(' ');
       const cmd = parts[0].toUpperCase();
-      const arg = parts.slice(1).join(' ');
+      const arg = parts.slice(1).join(' ').toUpperCase();
 
       if (cmd === 'SEARCH' || cmd === 'FIND') {
         onExecuteSearch(arg);
@@ -49,6 +51,10 @@ export const CommandPrompt = ({
         } else {
           soundSynth.playError();
         }
+      } else if (cmd === 'CLEAR' && arg === 'CACHE') {
+        onClearCache?.();
+      } else if (cmd === 'PURGE') {
+        onClearCache?.();
       } else if (cmd === 'HELP' || cmd === '?') {
         onOpenHelp();
       } else if (cmd === 'CLS' || cmd === 'CLEAR') {
@@ -69,7 +75,7 @@ export const CommandPrompt = ({
         ref={inputRef}
         type="text"
         className="dos-cmd-input"
-        placeholder="Escriba un comando (ej. SEARCH Skywalker, DIR planets, THEME rebel, HELP)..."
+        placeholder="Escriba un comando (ej. SEARCH Skywalker, CLEAR CACHE, THEME rebel, HELP)..."
         value={inputVal}
         onInput={(e) => setInputVal((e.target as HTMLInputElement).value)}
         onKeyDown={handleKeyDown}
