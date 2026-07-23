@@ -1,13 +1,26 @@
-import { useState } from 'preact/hooks';
 import { DatFileEntry } from '../types/swapi';
 import { soundSynth } from '../services/sound';
 
+export type RightPaneTab = 'general' | 'stats' | 'raw';
+
 interface RightPaneProps {
   selectedEntry: DatFileEntry | null;
+  activeTab?: RightPaneTab;
+  onTabChange?: (tab: RightPaneTab) => void;
+  onNavigateToUrl?: (url: string) => void;
 }
 
-export const RightPane = ({ selectedEntry }: RightPaneProps) => {
-  const [activeTab, setActiveTab] = useState<'general' | 'stats' | 'raw'>('general');
+export const RightPane = ({
+  selectedEntry,
+  activeTab = 'general',
+  onTabChange,
+  onNavigateToUrl
+}: RightPaneProps) => {
+
+  const handleTabClick = (tab: RightPaneTab) => {
+    soundSynth.playClick();
+    onTabChange?.(tab);
+  };
 
   if (!selectedEntry) {
     return (
@@ -26,6 +39,20 @@ export const RightPane = ({ selectedEntry }: RightPaneProps) => {
 
   const data = selectedEntry.data as Record<string, any>;
 
+  const parseSwapiUrlLabel = (urlStr: string): string => {
+    try {
+      const match = urlStr.match(/\/(people|planets|starships|vehicles|species|films)\/(\d+)\/?$/);
+      if (match) {
+        const cat = match[1].toUpperCase();
+        const id = match[2];
+        return `[VER ${cat} #${id}]`;
+      }
+    } catch {
+      // fallback
+    }
+    return '[ENLACE REGISTRO]';
+  };
+
   const renderProgress = (valStr: string, maxVal: number = 200) => {
     const num = parseInt(valStr, 10);
     if (isNaN(num)) return <span className="yellow-text">{valStr}</span>;
@@ -40,6 +67,13 @@ export const RightPane = ({ selectedEntry }: RightPaneProps) => {
     );
   };
 
+  // Extract relational properties (array or single string starting with http)
+  const relationalEntries = Object.entries(data).filter(([_k, v]) => {
+    if (typeof v === 'string' && v.startsWith('http')) return true;
+    if (Array.isArray(v) && v.length > 0 && typeof v[0] === 'string' && v[0].startsWith('http')) return true;
+    return false;
+  });
+
   return (
     <div className="dos-pane">
       <div className="tui-window">
@@ -51,21 +85,21 @@ export const RightPane = ({ selectedEntry }: RightPaneProps) => {
           <div style={{ marginBottom: '8px' }}>
             <button
               className={`tui-button ${activeTab === 'general' ? 'tui-fieldset-button' : ''}`}
-              onClick={() => { soundSynth.playClick(); setActiveTab('general'); }}
+              onClick={() => handleTabClick('general')}
               style={{ marginRight: '4px' }}
             >
               [1] General
             </button>
             <button
               className={`tui-button ${activeTab === 'stats' ? 'tui-fieldset-button' : ''}`}
-              onClick={() => { soundSynth.playClick(); setActiveTab('stats'); }}
+              onClick={() => handleTabClick('stats')}
               style={{ marginRight: '4px' }}
             >
               [2] Estadísticas
             </button>
             <button
               className={`tui-button ${activeTab === 'raw' ? 'tui-fieldset-button' : ''}`}
-              onClick={() => { soundSynth.playClick(); setActiveTab('raw'); }}
+              onClick={() => handleTabClick('raw')}
             >
               [3] Raw JSON
             </button>
@@ -82,7 +116,7 @@ export const RightPane = ({ selectedEntry }: RightPaneProps) => {
 
                 <div className="tui-panel" style={{ padding: '8px', marginTop: '10px' }}>
                   {Object.entries(data)
-                    .filter(([_key, v]) => typeof v === 'string' && !v.startsWith('http'))
+                    .filter(([k, v]) => typeof v === 'string' && !v.startsWith('http') && k !== 'name' && k !== 'title')
                     .slice(0, 8)
                     .map(([k, v]) => (
                       <div key={k} style={{ marginBottom: '4px', fontSize: '0.9rem' }}>
@@ -91,6 +125,45 @@ export const RightPane = ({ selectedEntry }: RightPaneProps) => {
                       </div>
                     ))}
                 </div>
+
+                {relationalEntries.length > 0 && (
+                  <div style={{ marginTop: '12px' }}>
+                    <h5 className="yellow-text" style={{ margin: '0 0 6px 0', borderBottom: '1px dashed #00aaaa' }}>
+                      🔗 ENLACES Y RELACIONES HOLONET
+                    </h5>
+                    {relationalEntries.map(([k, v]) => (
+                      <div key={k} style={{ marginBottom: '6px', fontSize: '0.85rem' }}>
+                        <span className="cyan-text">{k.replace(/_/g, ' ').toUpperCase()}:</span>{' '}
+                        {typeof v === 'string' ? (
+                          <span
+                            className="dos-link"
+                            onClick={() => {
+                              soundSynth.playClick();
+                              onNavigateToUrl?.(v);
+                            }}
+                          >
+                            {parseSwapiUrlLabel(v)}
+                          </span>
+                        ) : (
+                          <div style={{ display: 'inline-flex', flexWrap: 'wrap', gap: '6px', marginTop: '2px' }}>
+                            {(v as string[]).map((url) => (
+                              <span
+                                key={url}
+                                className="dos-link"
+                                onClick={() => {
+                                  soundSynth.playClick();
+                                  onNavigateToUrl?.(url);
+                                }}
+                              >
+                                {parseSwapiUrlLabel(url)}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

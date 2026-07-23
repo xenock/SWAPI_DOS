@@ -1,12 +1,16 @@
 import { useState } from 'preact/hooks';
 import { soundSynth } from '../services/sound';
 import { SwapiCategory } from '../types/swapi';
+import { DosTheme } from './Navbar';
+import { RefObject } from 'preact';
 
 interface CommandPromptProps {
   currentCategory: SwapiCategory;
   onExecuteSearch: (query: string) => void;
   onChangeCategory: (category: SwapiCategory) => void;
   onOpenHelp: () => void;
+  onSelectTheme: (theme: DosTheme) => void;
+  inputRef?: RefObject<HTMLInputElement>;
 }
 
 export const CommandPrompt = ({
@@ -14,6 +18,8 @@ export const CommandPrompt = ({
   onExecuteSearch,
   onChangeCategory,
   onOpenHelp,
+  onSelectTheme,
+  inputRef
 }: CommandPromptProps) => {
   const [inputVal, setInputVal] = useState('');
 
@@ -36,6 +42,13 @@ export const CommandPrompt = ({
         } else {
           soundSynth.playError();
         }
+      } else if (cmd === 'THEME') {
+        const themeName = arg.toLowerCase() as DosTheme;
+        if (['imperial', 'rebel', 'sith', 'amber'].includes(themeName)) {
+          onSelectTheme(themeName);
+        } else {
+          soundSynth.playError();
+        }
       } else if (cmd === 'HELP' || cmd === '?') {
         onOpenHelp();
       } else if (cmd === 'CLS' || cmd === 'CLEAR') {
@@ -53,9 +66,10 @@ export const CommandPrompt = ({
     <div className="dos-cmd-bar">
       <label>C:\SWAPI\{currentCategory.toUpperCase()}&gt;</label>
       <input
+        ref={inputRef}
         type="text"
         className="dos-cmd-input"
-        placeholder="Escriba un comando (ej. SEARCH Skywalker, DIR planets, HELP)..."
+        placeholder="Escriba un comando (ej. SEARCH Skywalker, DIR planets, THEME rebel, HELP)..."
         value={inputVal}
         onInput={(e) => setInputVal((e.target as HTMLInputElement).value)}
         onKeyDown={handleKeyDown}

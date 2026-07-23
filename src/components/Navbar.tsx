@@ -1,15 +1,27 @@
 import { SwapiCategory } from '../types/swapi';
 import { soundSynth } from '../services/sound';
 
+export type DosTheme = 'imperial' | 'rebel' | 'sith' | 'amber';
+
 interface NavbarProps {
   currentCategory: SwapiCategory;
   onSelectCategory: (cat: SwapiCategory) => void;
   onOpenHelp: () => void;
   isMuted: boolean;
   onToggleMute: () => void;
+  currentTheme: DosTheme;
+  onSelectTheme: (theme: DosTheme) => void;
 }
 
-export const Navbar = ({ currentCategory, onSelectCategory, onOpenHelp, isMuted, onToggleMute }: NavbarProps) => {
+export const Navbar = ({
+  currentCategory,
+  onSelectCategory,
+  onOpenHelp,
+  isMuted,
+  onToggleMute,
+  currentTheme,
+  onSelectTheme
+}: NavbarProps) => {
   const categories: { label: string; key: SwapiCategory }[] = [
     { label: 'Personajes', key: 'people' },
     { label: 'Planetas', key: 'planets' },
@@ -37,14 +49,25 @@ export const Navbar = ({ currentCategory, onSelectCategory, onOpenHelp, isMuted,
             </a>
           </li>
         ))}
+
+        <li style={{ float: 'right' }}>
+          <a onClick={() => { soundSynth.playClick(); onOpenHelp(); }}>
+            Ayuda (F1)
+          </a>
+        </li>
         <li style={{ float: 'right' }}>
           <a onClick={() => { soundSynth.playClick(); onToggleMute(); }}>
             AUDIO: {isMuted ? '[MUTED]' : '[ON]'}
           </a>
         </li>
         <li style={{ float: 'right' }}>
-          <a onClick={() => { soundSynth.playClick(); onOpenHelp(); }}>
-            Ayuda (F1)
+          <a onClick={() => {
+            soundSynth.playClick();
+            const themesList: DosTheme[] = ['imperial', 'rebel', 'sith', 'amber'];
+            const nextIdx = (themesList.indexOf(currentTheme) + 1) % themesList.length;
+            onSelectTheme(themesList[nextIdx]);
+          }}>
+            TEMA: [{currentTheme.toUpperCase()}]
           </a>
         </li>
       </ul>

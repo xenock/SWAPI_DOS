@@ -1,13 +1,40 @@
 @import 'tuicss/dist/tuicss.min.css';
 
-/* MS-DOS 16-Color Retro Palette Overrides & Layout */
-:root {
+/* MS-DOS Theme Variables */
+:root, [data-theme="imperial"] {
   --dos-bg-blue: #0000aa;
   --dos-cyan: #00aaaa;
   --dos-yellow: #ffff55;
   --dos-white: #ffffff;
   --dos-black: #000000;
   --dos-gray: #aaaaaa;
+}
+
+[data-theme="rebel"] {
+  --dos-bg-blue: #001A00;
+  --dos-cyan: #00FF66;
+  --dos-yellow: #CCFF00;
+  --dos-white: #E6FFE6;
+  --dos-black: #000D00;
+  --dos-gray: #4D8055;
+}
+
+[data-theme="sith"] {
+  --dos-bg-blue: #1A0000;
+  --dos-cyan: #FF3333;
+  --dos-yellow: #FF9900;
+  --dos-white: #FFE6E6;
+  --dos-black: #0D0000;
+  --dos-gray: #804D4D;
+}
+
+[data-theme="amber"] {
+  --dos-bg-blue: #1A1000;
+  --dos-cyan: #FFB000;
+  --dos-yellow: #FFD066;
+  --dos-white: #FFF2D6;
+  --dos-black: #0D0800;
+  --dos-gray: #806633;
 }
 
 html, body {
@@ -30,7 +57,7 @@ html, body {
   box-sizing: border-box;
 }
 
-/* CRT Screen Effect Overlay (Optional) */
+/* CRT Screen Effect Overlay */
 .crt-overlay {
   position: absolute;
   top: 0;
@@ -95,6 +122,7 @@ html, body {
   flex-direction: column;
   height: 100%;
   margin: 0;
+  background-color: var(--dos-bg-blue) !important;
 }
 
 .dos-pane .tui-window-content {
@@ -183,4 +211,17 @@ html, body {
   color: var(--dos-white);
   background-color: #005555;
   padding: 0 4px;
+}
+
+/* Interactive Cross-Entity Links */
+.dos-link {
+  color: var(--dos-yellow);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.dos-link:hover {
+  background-color: var(--dos-cyan);
+  color: var(--dos-black);
+  text-decoration: none;
 }
